@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.Integer.parseInt;
 
@@ -159,20 +157,22 @@ public class Main {
             float min = 0;
             float max = 0;
             float median = 0;
+            List<Integer> currentTypeCalories = new ArrayList<>();
 
             for (Meal meal : mealList) {
                 if (!currentMealType.equals(meal.getMealType().getPrettyPrint())) {
+                    Collections.sort(currentTypeCalories);
+                    median = currentTypeCalories.get(count / 2);
                     mean = total / count;
                     System.out.printf("%-20s%-20f%-20f%-20f%-20f%-20f%n", currentMealType, total, mean, min, max, median);
 
                     total = 0;
-                    mean = 0;
                     min = 0;
                     max = 0;
-                    median = 0;
                     count = 0;
 
                     currentMealType = meal.getMealType().getPrettyPrint();
+                    currentTypeCalories.clear();
                 }
 
                 if (min == 0 || meal.getCalories() < min) {
@@ -183,7 +183,12 @@ public class Main {
                 }
                 total += meal.getCalories();
                 count++;
+                currentTypeCalories.add(meal.getCalories());
             }
+
+            mean = total / count;
+            median = currentTypeCalories.get(count / 2);
+            System.out.printf("%-20s%-20f%-20f%-20f%-20f%-20f%n", currentMealType, total, mean, min, max, median);
 
         } catch (IOException ioe) {
             System.out.println("Can't open file");
