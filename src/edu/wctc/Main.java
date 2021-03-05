@@ -113,6 +113,10 @@ public class Main {
         cookbook.printByNameSearch(ans);
     }
 
+    private void newControlBreak() {
+
+    }
+
     private void doControlBreak() {
         List<Meal> mealList = new ArrayList<>();
 
