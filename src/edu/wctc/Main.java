@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
 
@@ -94,7 +96,8 @@ public class Main {
                     searchByName();
                     break;
                 case "4":
-                    doControlBreak();
+                    /*doControlBreak();*/
+                    newControlBreak();
                     break;
                 case "5":
                     userContinue = false;
@@ -114,7 +117,53 @@ public class Main {
     }
 
     private void newControlBreak() {
+        List<Meal> mealList = cookbook.getMeals();
+        List<MealType> mealTypes = Arrays.asList(MealType.values());
 
+        System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%n", "Meal Type", "Total", "Mean", "Min", "Max", "Median");
+
+        int count = 0;
+        float total = 0;
+        float mean = 0;
+        int min = 0;
+        int max = 0;
+        int median = 0;
+
+        for (MealType mealType : mealTypes) {
+            List<Meal> currentMeals = mealList.stream()
+                    .filter(m -> m.getMealType() == mealType)
+                    .collect(Collectors.toList());
+
+            count = currentMeals.size();
+
+            total = currentMeals.stream()
+                    .mapToInt(Meal::getCalories)
+                    .sum();
+
+            mean = total / count;
+
+            min = currentMeals.stream()
+                    .mapToInt(Meal::getCalories)
+                    .min()
+                    .orElse(0);
+
+            max = currentMeals.stream()
+                    .mapToInt(Meal::getCalories)
+                    .max()
+                    .orElse(0);
+
+            List<Meal> sortedMeals = currentMeals.stream()
+                    .sorted(Comparator.comparing(Meal::getCalories))
+                    .collect(Collectors.toList());
+
+            if (count % 2 == 0) {
+                median = (sortedMeals.get(count / 2).getCalories() + sortedMeals.get((count / 2) - 1).getCalories()) / 2;
+            } else {
+                median = sortedMeals.get(count / 2).getCalories();
+            }
+
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s%n", mealType.getPrettyPrint(), total, mean, min, max, median);
+        }
     }
 
     private void doControlBreak() {
